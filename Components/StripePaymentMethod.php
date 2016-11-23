@@ -1,6 +1,7 @@
 <?php
 namespace Shopware\Plugins\StripePayment\Components;
 
+use Shopware\Models\Order\Order;
 use ShopwarePlugin\PaymentMethods\Components\GenericPaymentMethod;
 use Shopware\Plugins\StripePayment\Util;
 
@@ -54,6 +55,16 @@ abstract class BaseStripePaymentMethod extends GenericPaymentMethod
             'stripeTransactionToken' => $stripeTransactionToken,
             'stripeCardId' => $stripeCardId
         );
+    }
+
+
+    /**
+     * Captures the payment for a given order that was reserved (auth'd)
+     *
+     * @param Order $order
+     */
+    public function captureOrder(Order $order) {
+        $paymentMethod = $order->getPayment();
     }
 
 }
