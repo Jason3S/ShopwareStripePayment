@@ -103,17 +103,22 @@ abstract class BaseStripePaymentMethod extends GenericPaymentMethod
         $date = date('d.m.Y, G:i:s');
         $amountFormatted = number_format($amount, 2, ',', '.');
 
+        $tranMsg = '';
+        if (isset($charge) && $charge->captured) {
+            // Remember the balance transaction hash
+            $tranMsg = "Transaction: {$charge->balance_transaction}\n";
+        }
+
         // Add a new refund comment to the internal comment of the order
         $internalComment = $order->getInternalComment()
             . "\n--------------------------------------------------------------\n"
             . "Stripe Capture ($date)\n"
             . "Amount: $amountFormatted {$order->getCurrency()}\n"
             . $errorMessage
+            . $tranMsg
             . "--------------------------------------------------------------\n";
         $order->setInternalComment($internalComment);
         if (isset($charge) && $charge->captured) {
-            // Set the temporaryId to match the balance transaction hash to match the payment process
-            $order->setTemporaryId($charge->balance_transaction);
             // Set the date to now
             $order->setClearedDate(new \DateTime());
         }
